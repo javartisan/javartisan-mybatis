@@ -15,10 +15,11 @@ bin/
 
 # idea ignore
 .idea/
+.idea/*
 *.ipr
 *.iml
 *.iws
-/.idea/
+/.idea/*
 
 # temp ignore
 *.log

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.javartisan.mapper.UserInfoMapper">
+
+
+    <!-- resultType用于表示返回的类型是一个JavaBean，而resultMap是引用一个自定义的resultMap的id  -->
+
+    <!--UserInfo findById(Long id);-->
+    <select id="findById" resultMap="userInfoResultMap">
+        select id,user_name,pass_word,user_email from userinfo where id = #{id}
+    </select>
+
+    <resultMap id="userInfoResultMap" type="com.javartisan.bean.UserInfo">
+        <result column="user_email" property="user_email"/>
+    </resultMap>
+
+
+    <!--  =============================   -->
+
+    <!--UserInfo saveUserInfo(UserInfo userInfo);-->
+    <insert id="saveUserInfo">
+            INSERT into userinfo (user_name,pass_word,user_email) VALUES (#{userInfo.userName},#{userInfo.passWord},#{userInfo.user_email})
+    </insert>
+
+
+    <!--Long saveUserInfoReturnPrimaryKey(@Param("userInfo") UserInfo userInfo);-->
+
+    <!-- 返回主键绑定到bean的id之上，需要配置keyProperty，由于我们的参数是一个bean，因此绑定的id需要写："对象.属性名" 的形式 -->
+    <insert id="saveUserInfoReturnPrimaryKey" parameterType="com.javartisan.bean.UserInfo" useGeneratedKeys="true"
+            keyProperty="userInfo.id">
+        INSERT into userinfo (user_name,pass_word,user_email) VALUES
+        (#{userInfo.userName},#{userInfo.passWord},#{userInfo.user_email})
+    </insert>
+
+
+</mapper>

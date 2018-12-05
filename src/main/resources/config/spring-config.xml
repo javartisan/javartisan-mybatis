@@ -46,7 +46,7 @@
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 
-    <!-- 多数据源： 数据源2 -->
+    <!--========================================================多数据源： 数据源2================================================== -->
     <!-- 配置数据源 -->
     <bean name="dataSource2" class="com.alibaba.druid.pool.DruidDataSource"
           init-method="init" destroy-method="close">
@@ -68,11 +68,14 @@
         <property name="logAbandoned" value="true"/>
         <property name="filters" value="mergeStat"/>
     </bean>
+
     <bean id="sqlSessionFactory2" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource2"/>
         <property name="configLocation" value="classpath:config/mybatis-config.xml"/>
+        <!-- 不同包下面的mapper使用不同的数据源 -->
         <property name="mapperLocations" value="classpath:com/javartisan/mysql2/mapper/*.xml"/>
     </bean>
+    <!-- 不同包下面的mapper使用不同的数据源 -->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.javartisan.mysql2.mapper"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory2"/>

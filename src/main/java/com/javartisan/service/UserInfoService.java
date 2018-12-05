@@ -6,7 +6,9 @@ public interface UserInfoService {
 
     UserInfo findById(Long id);
 
+    UserInfo findByIdDollar(String userName);
+
     Long saveUserInfo(UserInfo userInfo);
 
-    Long saveUserInfoReturnPrimaryKey( UserInfo userInfo);
+    Long saveUserInfoReturnPrimaryKey(UserInfo userInfo);
 }

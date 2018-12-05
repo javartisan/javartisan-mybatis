@@ -20,6 +20,11 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
+    public UserInfo findByIdDollar(String userName) {
+        return userInfoMapper.findByNameDollar(userName);
+    }
+
+    @Override
     public Long saveUserInfo(UserInfo userInfo) {
         return userInfoMapper.saveUserInfo(userInfo);
     }

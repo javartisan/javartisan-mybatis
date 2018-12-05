@@ -33,5 +33,9 @@
     </insert>
 
 
+    <select id="findByNameDollar" resultMap="userInfoResultMap">
+        select id,user_name,pass_word,user_email from userinfo where user_name = ${userName}
+    </select>
+
 
 </mapper>

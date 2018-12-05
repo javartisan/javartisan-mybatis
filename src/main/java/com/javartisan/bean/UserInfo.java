@@ -6,6 +6,15 @@ public class UserInfo {
     private String userName;
     private String passWord;
 
+    public UserInfo(String id, String userName, String passWord, String user_email) {
+        this.id = id;
+        this.userName = userName;
+        this.passWord = passWord;
+        this.user_email = user_email;
+    }
+
+    public UserInfo() {
+    }
 
     //======
 

@@ -7,6 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:config/spring-config.xml"})
 public class UserInfoServiceTest {
@@ -38,8 +43,6 @@ public class UserInfoServiceTest {
         userInfo.setUser_email("javartisan@163.com");
         System.out.println(userInfoService.saveUserInfo(userInfo));
         System.out.println(userInfo.getId());
-
-
     }
 
     @Test
@@ -51,7 +54,73 @@ public class UserInfoServiceTest {
         userInfo.setUser_email("javartisan@163.com");
         System.out.println(userInfoService.saveUserInfoReturnPrimaryKey(userInfo));
         System.out.println(userInfo.getId());
+    }
 
 
+    @Test
+    public void saveUserInfos() {
+
+
+        List<UserInfo> userInfos = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            userInfos.add(new UserInfo("saveUserInfos" + i, System.currentTimeMillis() + "" + i, "saveUserInfos" + i, "saveUserInfos" + i));
+        }
+        userInfoService.saveUsers(userInfos);
+    }
+
+
+    @Test
+    public void findByOneOfCase() {
+        List<UserInfo> userInfos = userInfoService.findByOneOfCase(1L, null, null, null);
+        System.out.println(userInfos);
+
+        userInfos = userInfoService.findByOneOfCase(null, "root", null, null);
+        System.out.println(userInfos);
+
+        userInfos = userInfoService.findByOneOfCase(null, null, null, null);
+        System.out.println(userInfos);
+    }
+
+
+    @Test
+    public void findByOneOfCaseUseWhereTag() {
+        List<UserInfo> userInfos = userInfoService.findByOneOfCaseUseWhereTag(1L, null, null, null);
+        System.out.println(userInfos);
+
+        userInfos = userInfoService.findByOneOfCaseUseWhereTag(null, "root", null, null);
+        System.out.println(userInfos);
+
+        userInfos = userInfoService.findByOneOfCaseUseWhereTag(null, null, null, null);
+        System.out.println(userInfos);
+    }
+
+
+    @Test
+    public void findByOneOfCaseUseTrimTag() {
+        List<UserInfo> userInfos = userInfoService.findByOneOfCaseUseTrimTag(1L, null, null, null);
+        System.out.println(userInfos);
+
+        userInfos = userInfoService.findByOneOfCaseUseTrimTag(null, "root", null, null);
+        System.out.println(userInfos);
+
+        userInfos = userInfoService.findByOneOfCaseUseTrimTag(null, null, null, null);
+        System.out.println(userInfos);
+    }
+
+
+    @Test
+    public void updateById() {
+        System.out.println(userInfoService.updateById(3L, "ROOT", "ROOT"));
+    }
+
+
+    @Test
+    public void selectIdContains() {
+        Set<Integer> ids = new HashSet<>();
+        ids.add(1);
+        ids.add(2);
+        ids.add(3);
+        ids.add(4);
+        System.out.println(userInfoService.selectIdContains(ids));
     }
 }

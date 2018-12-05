@@ -42,4 +42,127 @@
     </select>
 
 
+    <!--  Mybatis的动态SQL部分-->
+
+    <!--Long saveUsers(@Param("userInfos") List<UserInfo> userInfos);-->
+
+    <insert id="saveUsers">
+        INSERT into userinfo (user_name,pass_word,user_email) VALUES
+        <foreach collection="userInfos" index="index" item="userInfo" open="(" separator="),(" close=")">
+            #{userInfo.userName}, #{userInfo.passWord}, #{userInfo.user_email}
+        </foreach>
+    </insert>
+
+    <select id="selectIdContains" resultMap="userInfoResultMap">
+        select id,user_name,pass_word,user_email from userinfo where id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+
+    <!--List<UserInfo> findByOneOfCase(@Param("id") Long id, @Param("userName") String userName, @Param("passWord") String passWord, @Param("userEmail") String userEmail);-->
+
+    <!-- 其中1=1 是为了解决sql条件匹配出错的问题 ，例如 没有1=1 第一个条件没有匹配上，就会出现 where and ..的形式报错，所以1=1是一种解决方案，还有一种方案就是where -->
+    <select id="findByOneOfCase" resultMap="userInfoResultMap">
+        SELECT id,user_name,pass_word,user_email FROM userinfo WHERE 1=1
+        <choose>
+            <when test="id!=null">
+                and id=#{id}
+            </when>
+            <when test="userName!=null">
+                and user_name=#{userName}
+            </when>
+            <when test="passWord!=null">
+                and user_password=#{passWord}
+            </when>
+            <when test="userEmail!=null">
+                and user_email=#{userEmail}
+            </when>
+            <otherwise>
+                AND user_name='root'
+            </otherwise>
+        </choose>
+    </select>
+
+
+    <!-- 解决` where and `的SQL错误，如下是反例： 当id =null userName不等于null会报错 -->
+    <select id="findByOneOfCaseUseWhereTagErrorSample" resultMap="userInfoResultMap">
+        SELECT id,user_name,pass_word,user_email FROM userinfo WHERE
+        <if test="id!=null">
+            id=#{id}
+        </if>
+        <if test="userName!=null">
+            and user_name=#{userName}
+        </if>
+        <if test="passWord!=null">
+            and user_password=#{passWord}
+        </if>
+        <if test="userEmail!=null">
+            and user_email=#{userEmail}
+        </if>
+    </select>
+    <!-- Where 解决Where and 形式的SQL错误:
+    where 元素只会在至少有一个子元素的条件返回 SQL 子句的情况下才去插入“WHERE”子句。而且，若语句的开头为“AND”或“OR”，where 元素也会将它们去除。
+    注意：使用where标签就不再需要些where了，where标签会生成where关键字
+    -->
+    <select id="findByOneOfCaseUseWhereTag" resultMap="userInfoResultMap">
+        SELECT id,user_name,pass_word,user_email FROM userinfo
+        <where>
+            <if test="id!=null">
+                id=#{id}
+            </if>
+            <if test="userName!=null">
+                and user_name=#{userName}
+            </if>
+            <if test="passWord!=null">
+                and user_password=#{passWord}
+            </if>
+            <if test="userEmail!=null">
+                and user_email=#{userEmail}
+            </if>
+        </where>
+    </select>
+
+
+    <!--trim标签使用-->
+    <!--1、trim 有四个属性-->
+    <!--2、prefix，suffix 表示在trim标签包裹的部分的前面或者后面添加内容（注意：是没有prefixOverrides，suffixOverrides的情况下）-->
+    <!--3、如果有prefixOverrides，suffixOverrides 表示**覆盖**Overrides中的内容。-->
+    <!--4、如果只有prefixOverrides，suffixOverrides 表示删除。-->
+    <select id="findByOneOfCaseUseTrimTag" resultMap="userInfoResultMap">
+        SELECT id,user_name,pass_word,user_email FROM userinfo
+        <trim prefix="where" prefixOverrides="AND |OR">
+            <if test="id!=null">
+                id=#{id}
+            </if>
+            <if test="userName!=null">
+                and user_name=#{userName}
+            </if>
+            <if test="passWord!=null">
+                and user_password=#{passWord}
+            </if>
+            <if test="userEmail!=null">
+                and user_email=#{userEmail}
+            </if>
+        </trim>
+    </select>
+
+    <!-- set 会自动删除set后面多余逗号 ，前面的逗号不会删除
+
+    可以使用trim同样实现
+    -->
+    <update id="updateById">
+        update userinfo
+        <set>
+            <if test="userName!=null">
+                user_name=#{userName},
+            </if>
+            <if test="passWord!=null">
+                pass_word=#{passWord},
+            </if>
+        </set>
+        WHERE id=#{id}
+    </update>
+
 </mapper>

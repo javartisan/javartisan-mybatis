@@ -8,4 +8,12 @@
         <!-- 开启驼峰规则，数据库下划线转成驼峰命名规则之后将查询字段值映射到Bean上去，默认是关闭的-->
         <setting name="mapUnderscoreToCamelCase" value="true"/>
     </settings>
+
+    <typeAliases>
+        <!-- 在没有注解的情况下，会使用 Bean 的首字母小写的非限定类名来作为它的别名。 统一配置-->
+        <package name="com.javartisan.bean"/>
+
+        <!-- 也可以单独配置-->
+        <!--<typeAlias type="com.javartisan.bean.UserInfo" alias="userInfo"/>-->
+    </typeAliases>
 </configuration>

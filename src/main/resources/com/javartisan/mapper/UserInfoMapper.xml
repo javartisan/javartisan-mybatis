@@ -10,7 +10,7 @@
         select id,user_name,pass_word,user_email from userinfo where id = #{id}
     </select>
 
-    <resultMap id="userInfoResultMap" type="com.javartisan.bean.UserInfo">
+    <resultMap id="userInfoResultMap" type="userInfo">
         <result column="user_email" property="user_email"/>
     </resultMap>
 
@@ -26,11 +26,12 @@
     <!--Long saveUserInfoReturnPrimaryKey(@Param("userInfo") UserInfo userInfo);-->
 
     <!-- 返回主键绑定到bean的id之上，需要配置keyProperty，由于我们的参数是一个bean，因此绑定的id需要写："对象.属性名" 的形式 -->
-    <insert id="saveUserInfoReturnPrimaryKey" parameterType="com.javartisan.bean.UserInfo" useGeneratedKeys="true"
+    <insert id="saveUserInfoReturnPrimaryKey" parameterType="userInfo" useGeneratedKeys="true"
             keyProperty="userInfo.id">
         INSERT into userinfo (user_name,pass_word,user_email) VALUES
         (#{userInfo.userName},#{userInfo.passWord},#{userInfo.user_email})
     </insert>
+
 
 
 </mapper>

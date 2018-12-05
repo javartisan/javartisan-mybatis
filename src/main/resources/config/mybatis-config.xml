@@ -16,4 +16,5 @@
         <!-- 也可以单独配置-->
         <!--<typeAlias type="com.javartisan.bean.UserInfo" alias="userInfo"/>-->
     </typeAliases>
+
 </configuration>

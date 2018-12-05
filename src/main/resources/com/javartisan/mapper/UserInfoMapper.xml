@@ -2,6 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.javartisan.mapper.UserInfoMapper">
 
+    <!--默认缓存是关闭的，使用如下标签开启注解，需要自行实现org.apache.ibatis.cache.Cache类完成缓存定制 -->
+    <!--<cache type="org.apache.ibatis.cache.CacheImplByYourSelf"/>-->
+
 
     <!-- resultType用于表示返回的类型是一个JavaBean，而resultMap是引用一个自定义的resultMap的id  -->
 
@@ -10,6 +13,7 @@
         select id,user_name,pass_word,user_email from userinfo where id = #{id}
     </select>
 
+    <!--Mybatis 还支持更高级的映射，例如构造器生成实例：http://www.mybatis.org/mybatis-3/zh/sqlmap-xml.html -->
     <resultMap id="userInfoResultMap" type="userInfo">
         <result column="user_email" property="user_email"/>
     </resultMap>

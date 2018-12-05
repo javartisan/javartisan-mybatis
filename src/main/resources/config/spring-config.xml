@@ -30,6 +30,12 @@
         <property name="logAbandoned" value="true"/>
         <property name="filters" value="mergeStat"/>
     </bean>
+
+    <!-- Spring集成Mybatis的启动器，启动过程如下:
+     1:org.mybatis.spring.SqlSessionFactoryBean.afterPropertiesSet中调用org.mybatis.spring.SqlSessionFactoryBean.buildSqlSessionFactory方法
+     2：org.mybatis.spring.SqlSessionFactoryBean.buildSqlSessionFactory方法中调用org.apache.ibatis.session.SqlSessionFactoryBuilder.build(org.apache.ibatis.session.Configuration)方法便完成SqlSessionFactory创建
+     3： 一旦有了SqlSessionFactory一切就好办了，可以从SqlSessionFactory中获取SqlSession操作数据量
+     -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="configLocation" value="classpath:config/mybatis-config.xml"/>

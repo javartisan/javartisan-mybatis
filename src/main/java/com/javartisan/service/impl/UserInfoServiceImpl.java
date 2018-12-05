@@ -13,6 +13,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Autowired
     private UserInfoMapper userInfoMapper;
 
+    //  mapper的代理类：MapperProxy
     @Override
     public UserInfo findById(Long id) {
         return userInfoMapper.findById(id);

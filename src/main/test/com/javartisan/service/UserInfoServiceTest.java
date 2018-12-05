@@ -1,5 +1,6 @@
 package com.javartisan.service;
 
+import com.javartisan.bean.Dog;
 import com.javartisan.bean.UserInfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +20,10 @@ public class UserInfoServiceTest {
 
     @Autowired
     private UserInfoService userInfoService;
+
+
+    @Autowired
+    private DogService dogService;
 
     @Test
     public void findById() {
@@ -122,5 +127,13 @@ public class UserInfoServiceTest {
         ids.add(3);
         ids.add(4);
         System.out.println(userInfoService.selectIdContains(ids));
+
+        Dog dog = new Dog();
+        dog.setDogName("diudiu");
+        dog.setType("jingba");
+        dogService.saveDog(dog);
+
+
+        System.out.println(dogService.findById(1L));
     }
 }

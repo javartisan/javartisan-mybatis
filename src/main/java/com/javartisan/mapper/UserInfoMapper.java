@@ -10,6 +10,8 @@ public interface UserInfoMapper {
 
     UserInfo findById(@Param("id") Long id);
 
+    Integer deleteById(@Param("id") Long id);
+
     List<UserInfo> selectIdContains(@Param("ids") Set<Integer> ids);
 
     Integer updateById(@Param("id") Long id, @Param("userName") String userName, @Param("passWord") String passWord);

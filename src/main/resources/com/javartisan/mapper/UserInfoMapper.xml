@@ -164,5 +164,8 @@
         </set>
         WHERE id=#{id}
     </update>
-
+    <!--UserInfo deleteById(Long id);-->
+    <delete id="deleteById">
+        DELETE FROM  userinfo where id = #{id}
+    </delete>
 </mapper>

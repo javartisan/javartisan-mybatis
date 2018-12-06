@@ -23,6 +23,11 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
+    public Integer deleteById(Long id) {
+        return userInfoMapper.deleteById(id);
+    }
+
+    @Override
     public List<UserInfo> selectIdContains(Set<Integer> ids) {
         return userInfoMapper.selectIdContains(ids);
     }

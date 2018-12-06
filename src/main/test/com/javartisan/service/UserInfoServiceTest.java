@@ -31,6 +31,12 @@ public class UserInfoServiceTest {
     }
 
 
+    @Test
+    public void deleteById() {
+        System.out.println(userInfoService.deleteById(31L));
+    }
+
+
     /**
      * 这是一个反面案例，${fieldName} 是直接替换不会转义
      */
@@ -105,11 +111,11 @@ public class UserInfoServiceTest {
         List<UserInfo> userInfos = userInfoService.findByOneOfCaseUseTrimTag(1L, null, null, null);
         System.out.println(userInfos);
 
-        userInfos = userInfoService.findByOneOfCaseUseTrimTag(null, "root", null, null);
-        System.out.println(userInfos);
-
-        userInfos = userInfoService.findByOneOfCaseUseTrimTag(null, null, null, null);
-        System.out.println(userInfos);
+//        userInfos = userInfoService.findByOneOfCaseUseTrimTag(null, "root", null, null);
+//        System.out.println(userInfos);
+//
+//        userInfos = userInfoService.findByOneOfCaseUseTrimTag(null, null, null, null);
+//        System.out.println(userInfos);
     }
 
 

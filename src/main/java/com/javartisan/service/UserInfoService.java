@@ -9,6 +9,8 @@ public interface UserInfoService {
 
     UserInfo findById(Long id);
 
+    Integer deleteById(Long id);
+
     List<UserInfo> selectIdContains(Set<Integer> ids);
 
     Integer updateById(Long id, String userName, String passWord);

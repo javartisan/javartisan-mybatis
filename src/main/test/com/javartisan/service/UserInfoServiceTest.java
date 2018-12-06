@@ -40,10 +40,10 @@ public class UserInfoServiceTest {
     /**
      * 这是一个反面案例，${fieldName} 是直接替换不会转义
      */
-    @Test
-    public void findByIdDollar() {
-        System.out.println(userInfoService.findByIdDollar("root"));
-    }
+//    @Test
+//    public void findByIdDollar() {
+//        System.out.println(userInfoService.findByIdDollar("root"));
+//    }
 
     @Test
     public void saveUsreInfo() {

@@ -17,4 +17,9 @@
         <!--<typeAlias type="com.javartisan.bean.UserInfo" alias="userInfo"/>-->
     </typeAliases>
 
+    <plugins>
+        <plugin interceptor="com.javartisan.mybatis.plugin.SqlExecutingCost">
+            <property name="pluginName" value="sqlExecutingCost"/>
+        </plugin>
+    </plugins>
 </configuration>

@@ -1,6 +1,6 @@
 package com.javartisan.mybatis.plugin;
 
-import org.apache.commons.lang3.reflect.TypeUtils;
+import com.alibaba.druid.sql.SQLUtils;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -11,14 +11,11 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
-import org.apache.ibatis.type.JdbcType;
-import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 import java.lang.reflect.Field;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -27,8 +24,14 @@ import java.util.Properties;
 @Intercepts(@Signature(type = StatementHandler.class, method = "query",
         args = {Statement.class, ResultHandler.class}))
 public class SqlExecutingCost implements Interceptor {
-
+    /**
+     * 用于配置插件时候配置的属性，参见：mybatis-config.xml
+     */
     private Properties properties;
+    /**
+     * 是否开启格式化SQL工具，在mybatis-config.xml属性中配置即可
+     */
+    private Boolean formatSQL;
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
@@ -74,6 +77,10 @@ public class SqlExecutingCost implements Interceptor {
             }
 
             System.out.println("========================================================================================");
+            if (formatSQL) {
+                // com.alibaba.druid.sql.SQLUtils支持各种数据库SQL的格式化，好工具好好利用！
+                sql = SQLUtils.formatMySql(sql);
+            }
             System.out.println("SQL = [ " + sql + "  ] , CostTime = [ " + (System.currentTimeMillis() - startTime) + "ms ].");
             System.out.println("========================================================================================");
 
@@ -103,7 +110,7 @@ public class SqlExecutingCost implements Interceptor {
      */
     @Override
     public void setProperties(Properties properties) {
-        System.out.println("properties = [ " + properties + "]");
+        formatSQL = Boolean.valueOf(properties.getProperty("formatSQL"));
         this.properties = properties;
     }
 

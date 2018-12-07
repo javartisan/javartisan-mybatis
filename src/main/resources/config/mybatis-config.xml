@@ -20,6 +20,7 @@
     <plugins>
         <plugin interceptor="com.javartisan.mybatis.plugin.SqlExecutingCost">
             <property name="pluginName" value="sqlExecutingCost"/>
+            <property name="formatSQL" value="true"/>
         </plugin>
     </plugins>
 </configuration>

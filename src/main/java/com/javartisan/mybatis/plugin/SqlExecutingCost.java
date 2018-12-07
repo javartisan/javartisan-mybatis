@@ -5,9 +5,17 @@ import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.ParameterMapping;
+import org.apache.ibatis.mapping.ParameterMode;
 import org.apache.ibatis.plugin.*;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
+import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
+import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.TypeHandler;
+import org.apache.ibatis.type.TypeHandlerRegistry;
 
+import java.lang.reflect.Field;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
@@ -32,37 +40,43 @@ public class SqlExecutingCost implements Interceptor {
             throw ex;
         } finally {
 
-            // sql语句的抽象表示
             BoundSql boundSql = statementHandler.getBoundSql();
-            Object boundSqlParameterObject = boundSql.getParameterObject();
-
-            Class sqlParamsClazz = boundSqlParameterObject.getClass();
-
-            // 参数
-            ParameterHandler parameterHandler = statementHandler.getParameterHandler();
-            Map<Object, Object> params = (Map<Object, Object>) parameterHandler.getParameterObject();
-
-            // 参数属性名字
-            List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
-
-
             String sql = boundSql.getSql();
+            List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+            // StatementHandler里面持有ParameterHandler成员
+            ParameterHandler paramterHandler = statementHandler.getParameterHandler();
+            // 智者借力而行，参见源码实现：org.apache.ibatis.scripting.defaults.DefaultParameterHandler.setParameters()加以修改
+            // 反射获取需要使用的成员
+            TypeHandlerRegistry typeHandlerRegistry = getPrivateFieldValue(DefaultParameterHandler.class, paramterHandler, "typeHandlerRegistry");
+            Configuration configuration = getPrivateFieldValue(DefaultParameterHandler.class, paramterHandler, "configuration");
 
-            for (int i = 0; i < parameterMappings.size(); i++) {
-                // 基本类型或者基本类型的封装类型与集合类型获取参数方法不一样
-                ParameterMapping pm = parameterMappings.get(i);
+            Object parameterObject = paramterHandler.getParameterObject();
 
-                String propertyName = pm.getProperty();
-                Object paramValue = null;
-                if (isPrimitiveOrPrimitiveWrapper(sqlParamsClazz)) {
-                    paramValue = params.get(propertyName);
-                } else {
-                    paramValue = boundSql.getAdditionalParameter(propertyName);
+            if (parameterMappings != null) {
+                for (int i = 0; i < parameterMappings.size(); i++) {
+                    ParameterMapping parameterMapping = parameterMappings.get(i);
+                    if (parameterMapping.getMode() != ParameterMode.OUT) {
+                        Object value;
+                        String propertyName = parameterMapping.getProperty();
+                        if (boundSql.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
+                            value = boundSql.getAdditionalParameter(propertyName);
+                        } else if (parameterObject == null) {
+                            value = null;
+                        } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
+                            value = parameterObject;
+                        } else {
+                            MetaObject metaObject = configuration.newMetaObject(parameterObject);
+                            value = metaObject.getValue(propertyName);
+                        }
+                        sql = sql.replaceFirst("\\?", String.valueOf(value));
+                    }
                 }
-
-                sql = sql.replaceFirst("\\?", String.valueOf(paramValue));
             }
-            System.out.println("SQL : [  " + sql + " ]  =>  Cost Time : [" + (System.currentTimeMillis() - startTime) + "]");
+
+            System.out.println("========================================================================================");
+            System.out.println("SQL = [ " + sql + "  ] , CostTime = [ " + (System.currentTimeMillis() - startTime) + "ms ].");
+            System.out.println("========================================================================================");
+
         }
 
 
@@ -94,12 +108,20 @@ public class SqlExecutingCost implements Interceptor {
     }
 
 
-    public static boolean isPrimitiveOrPrimitiveWrapper(Class<?> parameterObjectClass) {
-        return parameterObjectClass.isPrimitive() ||
-                (parameterObjectClass.isAssignableFrom(Byte.class) || parameterObjectClass.isAssignableFrom(Short.class) ||
-                        parameterObjectClass.isAssignableFrom(Integer.class) || parameterObjectClass.isAssignableFrom(Long.class) ||
-                        parameterObjectClass.isAssignableFrom(Double.class) || parameterObjectClass.isAssignableFrom(Float.class) ||
-                        parameterObjectClass.isAssignableFrom(Character.class) || parameterObjectClass.isAssignableFrom(Boolean.class));
+    /**
+     * @param clazz
+     * @param object
+     * @param fieldName
+     * @return
+     */
+    public <T> T getPrivateFieldValue(Class clazz, Object object, String fieldName) {
+        try {
+            Field field = clazz.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return (T) field.get(object);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
-
 }

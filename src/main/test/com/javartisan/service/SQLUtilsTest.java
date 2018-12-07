@@ -2,7 +2,9 @@ package com.javartisan.service;
 
 
 import com.alibaba.druid.sql.SQLUtils;
+import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.parser.ParserException;
+import com.alibaba.druid.util.JdbcUtils;
 import org.junit.Test;
 
 /**
@@ -20,9 +22,12 @@ public class SQLUtilsTest {
     //SQL错误时候底层实现Catch住了异常，如何将异常抛到业务层？
     // com.alibaba.druid.sql.parser.ParserException: ERROR. token : SEMI, pos : 25
     @Test
-    public static void formatMySql() {
-        String sql = "SELECT * FROM USERINFO, ;";
+    public void formatMySqlErrorSQL() {
+        String sql = "SELECT * FROM USERINFO";
         try {
+            //toSQLExpr 底层是不catch异常的，会将异常返回给业务层，这样便于业务层处理错误信息
+            SQLExpr sqlExpr = SQLUtils.toSQLExpr(sql, JdbcUtils.MYSQL);
+
             System.out.println(SQLUtils.formatMySql(sql));
         } catch (ParserException e) {
             System.out.println(e.getMessage());
@@ -30,17 +35,21 @@ public class SQLUtilsTest {
 
     }
 
-
-    public static void main(String[] args) {
-        String sql = "SELECT * FROM USERINFO, ;";
+    /**
+     * sql结尾的';'不属于SQL的一部分，因此在预发检查时候去掉结尾的分号，格式化时候可以添加分号
+     */
+    @Test
+    public void formatMySqlSQL() {
+        String sql = "SELECT * FROM USERINFO";
         try {
-            sql = SQLUtils.formatMySql(sql);
-            System.out.println(Thread.getAllStackTraces());
-            System.out.println(sql);
-        } catch (Throwable e) {
+            //toSQLExpr 底层是不catch异常的，会将异常返回给业务层，这样便于业务层处理错误信息
+            SQLExpr sqlExpr = SQLUtils.toSQLExpr(sql, JdbcUtils.MYSQL);
+
+            System.out.println(SQLUtils.formatMySql(sql));
+        } catch (ParserException e) {
             System.out.println(e.getMessage());
         }
-    }
 
+    }
 
 }
